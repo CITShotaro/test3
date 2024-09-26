@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let bingoState = currentUser.bingoState || Array(25).fill(false);
     let bingoCount = currentUser.bingoCount || 0;
 
+    // 1から25の数字を生成してシャッフルする
+    const numbers = Array.from({ length: 25 }, (_, i) => i + 1); // [1, 2, 3, ..., 25]
+    const shuffledNumbers = shuffleArray(numbers);
+
     // BINGOカードの生成
     const generateBingoCard = () => {
         bingoCard.innerHTML = ''; // カードを初期化
@@ -23,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cell = document.createElement('div');
                 cell.classList.add('bingo-cell');
                 const cellIndex = i * 5 + j;
-                cell.textContent = `${cellIndex + 1}`; // マスの番号
+                const number = shuffledNumbers[cellIndex]; // シャッフルされた数字を取得
+                cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
                 if (bingoState[cellIndex]) {
