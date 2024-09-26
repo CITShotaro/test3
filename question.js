@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             alert('終了です。結果によりマスの色は変わりません。');
         }
-        window.location.href = 'index.html'; // BINGO画面に戻る
+        window.location.href = 'bingo.html'; // BINGO画面に戻る
     };
 
     // BINGOカードの状態を更新する関数
