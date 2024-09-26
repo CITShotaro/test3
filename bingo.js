@@ -1,11 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const bingoCard = document.getElementById('bingo-card');
     const bingoCountElement = document.getElementById('bingo-count');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { username: '', bingoCount: 0 };
-    let bingoCount = currentUser.bingoCount;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    // BINGOカードの状態を管理する配列（localStorageから読み込む）
-    let cardState = JSON.parse(localStorage.getItem('bingoState')) || Array(25).fill(false);
+    if (!currentUser) {
+        alert('ログインしてください。');
+        window.location.href = 'index.html'; // ログイン画面にリダイレクト
+        return;
+    }
+
+    let bingoState = currentUser.bingoState || Array(25).fill(false);
+    let bingoCount = currentUser.bingoCount || 0;
 
     // BINGOカードの生成
     const generateBingoCard = () => {
@@ -20,10 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = `${cellIndex + 1}`; // マスの番号
 
                 // カード状態に基づき、正解済みのマスの色を変える
-                if (cardState[cellIndex]) {
+                if (bingoState[cellIndex]) {
                     cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
                 } else {
-                    cell.addEventListener('click', () => handleCellClick(cellIndex, cell)); // 未正解マスのみクリック可能
+                    cell.addEventListener('click', () => handleCellClick(cellIndex)); // 未正解マスのみクリック可能
                 }
 
                 row.appendChild(cell);
@@ -33,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // マスクリック時の処理
-    const handleCellClick = (index, cell) => {
+    const handleCellClick = (index) => {
         localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
         window.location.href = 'question.html'; // 問題画面に遷移
     };
@@ -43,16 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
         bingoCountElement.textContent = bingoCount;
     };
 
-    // ローカルストレージにユーザーデータを保存
-    const saveUserData = () => {
+    // 現在のユーザー情報を更新
+    const saveCurrentUser = () => {
+        currentUser.bingoState = bingoState;
         currentUser.bingoCount = bingoCount;
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(user => user.username === currentUser.username);
 
         if (userIndex !== -1) {
-            users[userIndex] = currentUser; // 既存のユーザーを更新
-        } else {
-            users.push(currentUser); // 新しいユーザーを追加
+            users[userIndex] = currentUser;
         }
 
         localStorage.setItem('users', JSON.stringify(users));
