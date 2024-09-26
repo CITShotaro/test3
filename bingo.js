@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // BINGOカードの状態を管理する配列（現在のユーザーの状態を取得）
     let bingoState = currentUser.bingoState || Array(25).fill(false);
     let bingoCount = currentUser.bingoCount || 0;
 
