@@ -1,22 +1,24 @@
 const loadQuestionsFromCSV = async () => {
     try {
-        const response = await fetch('questions.csv'); // CSVファイルのパス
+        const response = await fetch('questions.csv');
         const data = await response.text();
-        const lines = data.split('\n').slice(1); // 1行目（ヘッダー）をスキップ
-
+        const lines = data.split('\n').slice(1); // ヘッダーを除去
+        
         return lines.map(line => {
-            const [question, correct, ...options] = line.split(',');
+            // 各行をカンマで分割し、要素を取得
+            const [question, correct, option1, option2, option3, option4] = line.split(',');
 
-            // エラーチェック（問題や選択肢が正しく取得されない場合）
-            if (!question || !correct || options.length < 3) {
+            // 各要素が undefined でないか確認
+            if (!question || !correct || !option1 || !option2 || !option3 || !option4) {
                 console.warn('不完全なデータをスキップ:', line);
-                return null; // 不完全なデータを無視する
+                return null; // 不完全な行は無視する
             }
 
+            // 各要素の前後の空白を削除し、オブジェクトを返す
             return {
                 question: question.trim(),
                 correct: correct.trim(),
-                options: options.map(option => option.trim()) // 各選択肢の前後の空白を削除
+                options: [option1.trim(), option2.trim(), option3.trim(), option4.trim()]
             };
         }).filter(q => q !== null); // null をフィルタリング
     } catch (error) {
@@ -24,7 +26,6 @@ const loadQuestionsFromCSV = async () => {
         return [];
     }
 };
-
 
 
 document.addEventListener('DOMContentLoaded', async () => {
