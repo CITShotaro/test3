@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // shuffleArray関数の定義を追加
+    // shuffleArray関数の定義
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
-                if (bingoState[cellIndex]) {
+                if (bingoState[number - 1]) { // bingoStateのインデックスとシャッフルされた番号の対応を確認
                     cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
                 } else {
-                    cell.addEventListener('click', () => handleCellClick(cellIndex)); // 未正解マスのみクリック可能
+                    cell.addEventListener('click', () => handleCellClick(number - 1)); // 未正解マスのみクリック可能
                 }
 
                 row.appendChild(cell);
