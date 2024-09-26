@@ -1,3 +1,4 @@
+/* 全体のスタイル */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -9,74 +10,144 @@ body {
     height: 100vh;
 }
 
-.login-container, .register-container, .bingo-container {
-    width: 300px;
-    margin: 100px auto;
-    padding: 20px;
-    background: white;
+/* ログイン・新規登録画面のスタイル */
+.login-container,
+.register-container {
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-h2, h1 {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 400px;
+    max-width: 90%;
     text-align: center;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
+/* ログイン・新規登録のタイトル */
+.login-container h2,
+.register-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333333;
 }
 
-input {
+/* 入力フォームのスタイル */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
     margin: 10px 0;
-    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
     font-size: 16px;
 }
 
-button {
-    padding: 10px;
-    background-color: #007bff;
+/* ログイン・新規登録のボタン */
+button[type="submit"] {
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 4px;
+    padding: 12px;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+button[type="submit"]:hover {
+    background-color: #218838;
 }
 
-.bingo-row {
-    display: flex;
+button[type="submit"]:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
+/* ログイン・新規登録画面のリンク */
+.login-container a,
+.register-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-container a:hover,
+.register-container a:hover {
+    text-decoration: underline;
+}
+
+/* エラーメッセージのスタイル */
+.error-message {
+    color: #ff0000;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* BINGO画面のコンテナ */
+.bingo-container {
+    text-align: center;
+    margin: 20px;
+}
+
+/* BINGOカードのグリッドレイアウト */
+#bingo-card {
+    display: grid;
+    grid-template-columns: repeat(5, 60px); /* 5列のグリッド */
+    gap: 10px;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+/* BINGOマスのスタイル */
 .bingo-cell {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    background: #ddd;
+    width: 60px;
+    height: 60px;
+    background-color: #e0e0e0; /* デフォルトのマスの色 */
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid #bdbdbd;
     border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .bingo-cell:hover {
-    background-color: #bbb;
+    background-color: #bdbdbd; /* ホバー時の色 */
 }
 
+/* 正解済みのマスのスタイル */
+.correct-cell {
+    background-color: #c8e6c9; /* 緑色の背景 */
+    border: 2px solid #66bb6a; /* 緑色の枠線 */
+    color: #2e7d32; /* 正解済みマスの文字色 */
+}
+
+/* BINGOカウントのスタイル */
 .bingo-count {
+    font-size: 20px;
     margin-top: 20px;
-    text-align: center;
+    color: #333333;
 }
 
-.error-message {
-    color: red;
-    text-align: center;
-    font-size: 14px;
+/* ランキングボタンのスタイル */
+#ranking-button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
+#ranking-button:hover {
+    background-color: #1976d2;
+}
+
+/* 問題画面のコンテナ */
 .question-container {
     background-color: #ffffff;
     border-radius: 8px;
@@ -87,23 +158,19 @@ button:hover {
     text-align: center;
 }
 
+/* 問題タイトルのスタイル */
 .question-title {
     margin-bottom: 20px;
     font-size: 24px;
     color: #333333;
 }
 
-/* 正解済みのマスのスタイル */
-.correct-cell {
-    background-color: #c8e6c9; /* 緑色の背景 */
-    border: 2px solid #66bb6a; /* 緑色の枠線 */
-}
-
-
+/* 問題文を表示するエリア */
 #question-area {
     margin-bottom: 20px;
 }
 
+/* 問題文のスタイル */
 #question-text {
     font-size: 18px;
     font-weight: bold;
@@ -113,6 +180,7 @@ button:hover {
     background-color: #f9f9f9;
 }
 
+/* 選択肢のスタイル（グリッドレイアウト） */
 #options {
     display: grid;
     grid-template-columns: 1fr;
@@ -120,6 +188,7 @@ button:hover {
     margin-bottom: 20px;
 }
 
+/* 選択肢ボタンのスタイル */
 .option-button {
     background-color: #007bff;
     color: white;
@@ -139,6 +208,7 @@ button:hover {
     background-color: #003d80;
 }
 
+/* フィードバックメッセージのスタイル */
 .feedback {
     margin-bottom: 20px;
     font-size: 16px;
@@ -150,6 +220,7 @@ button:hover {
     color: #28a745; /* 正解時は緑 */
 }
 
+/* 次の問題ボタンのスタイル */
 .next-question-button {
     background-color: #28a745;
     color: white;
@@ -161,17 +232,20 @@ button:hover {
     transition: background-color 0.3s ease;
 }
 
+/* 次の問題ボタンのホバースタイル */
 .next-question-button:hover {
     background-color: #218838;
 }
 
+/* 次の問題ボタンの無効化時のスタイル */
 .next-question-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
 }
 
+/* レスポンシブデザイン: 600px以上の画面幅に対応 */
 @media (min-width: 600px) {
     #options {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* 2列レイアウト */
     }
 }
