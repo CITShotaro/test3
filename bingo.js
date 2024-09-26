@@ -21,10 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // BINGOカードの状態を管理する配列（現在のユーザーの状態を取得）
     let bingoState = currentUser.bingoState || Array(25).fill(false);
     let bingoCount = currentUser.bingoCount || 0;
+    let shuffledNumbers;
 
-    // 1から25の数字を生成してシャッフルする
-    const numbers = Array.from({ length: 25 }, (_, i) => i + 1); // [1, 2, 3, ..., 25]
-    const shuffledNumbers = shuffleArray(numbers);
+    // ユーザーにシャッフル済みの番号が保存されているか確認
+    if (currentUser.bingoNumbers) {
+        shuffledNumbers = currentUser.bingoNumbers; // 保存された番号を使用
+    } else {
+        // 保存された番号がない場合、シャッフルして設定
+        const numbers = Array.from({ length: 25 }, (_, i) => i + 1); // [1, 2, 3, ..., 25]
+        shuffledNumbers = shuffleArray(numbers);
+        currentUser.bingoNumbers = shuffledNumbers; // シャッフルされた番号をユーザーに保存
+        saveCurrentUser(); // ユーザー情報を更新
+    }
 
     // BINGOカードの生成
     const generateBingoCard = () => {
@@ -65,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 現在のユーザー情報を更新
     const saveCurrentUser = () => {
-        currentUser.bingoState = bingoState;
-        currentUser.bingoCount = bingoCount;
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(user => user.username === currentUser.username);
 
