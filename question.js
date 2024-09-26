@@ -37,29 +37,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentQuestionIndex = 0;
     let correctAnswers = 0;
     const totalQuestions = 3;
-    
+
+    // 現在のマスのインデックスを取得
     const cellIndex = parseInt(localStorage.getItem('currentCellIndex'), 10) || 0;
 
-    console.log('選択されたマス番号:', cellIndex);
-
+    // CSVから問題を読み込む
     const allQuestions = await loadQuestionsFromCSV();
 
-    console.log('読み込まれた全ての問題:', allQuestions);
-
+    // 現在のマスに対応する問題を抽出
     const questions = allQuestions.slice(cellIndex * totalQuestions, (cellIndex + 1) * totalQuestions);
 
-    console.log('表示する問題:', questions);
-
+    // 問題が存在しない場合、アラートを表示して戻る
     if (questions.length === 0) {
         alert('問題データが読み込まれていません。CSVファイルの配置と読み込みパスを確認してください。');
         return;
     }
 
+    // 問題を表示する関数
     const loadQuestion = (index) => {
         const question = questions[index];
         questionText.textContent = question.question;
         optionsContainer.innerHTML = '';
-        feedback.textContent = ''; // フィードバックをクリア
+        feedback.textContent = '';
         feedback.classList.remove('correct');
 
         question.options.forEach(option => {
@@ -71,40 +70,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
+    // 回答をチェックし、正解・不正解のフィードバックを表示
     const checkAnswer = (selected, correct) => {
         if (selected === correct) {
             correctAnswers++;
             feedback.textContent = '正解です！';
-            feedback.classList.add('correct'); // 正解時に緑色にする
+            feedback.classList.add('correct');
         } else {
             feedback.textContent = `不正解です。正解は ${correct} です。`;
         }
 
-        // 次の問題ボタンを有効化
-        nextQuestionButton.disabled = false;
+        nextQuestionButton.disabled = false; // 次の問題ボタンを有効化
     };
 
+    // 全ての問題を終了した後の処理
     const completeQuestions = () => {
         if (correctAnswers === totalQuestions) {
             alert('3問全て正解です！このマスの色が変わります。');
-            updateBingoCellState(cellIndex);
+            updateBingoCellState(cellIndex); // マスの状態を更新
         } else {
             alert('終了です。結果によりマスの色は変わりません。');
         }
-        window.location.href = 'bingo.html';
+        window.location.href = 'index.html'; // BINGO画面に戻る
     };
 
+    // BINGOカードの状態を更新する関数
     const updateBingoCellState = (index) => {
         const bingoState = JSON.parse(localStorage.getItem('bingoState')) || Array(25).fill(false);
-        bingoState[index] = true;
-        localStorage.setItem('bingoState', JSON.stringify(bingoState));
+        bingoState[index] = true; // 現在のマスを正解済みとする
+        localStorage.setItem('bingoState', JSON.stringify(bingoState)); // 保存
     };
 
     nextQuestionButton.addEventListener('click', () => {
         if (currentQuestionIndex < totalQuestions - 1) {
             currentQuestionIndex++;
             loadQuestion(currentQuestionIndex);
-            nextQuestionButton.disabled = true; // ボタンを無効化
+            nextQuestionButton.disabled = true;
         } else {
             completeQuestions();
         }
