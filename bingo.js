@@ -23,6 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let bingoCount = currentUser.bingoCount || 0;
     let shuffledNumbers;
 
+    // 現在のユーザー情報を更新する関数を定義
+    const saveCurrentUser = () => {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(user => user.username === currentUser.username);
+
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+        }
+
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    };
+
     // ユーザーにシャッフル済みの番号が保存されているか確認
     if (currentUser.bingoNumbers) {
         shuffledNumbers = currentUser.bingoNumbers; // 保存された番号を使用
@@ -69,19 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // BINGOカウントの更新
     const updateBingoCount = () => {
         bingoCountElement.textContent = bingoCount;
-    };
-
-    // 現在のユーザー情報を更新
-    const saveCurrentUser = () => {
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const userIndex = users.findIndex(user => user.username === currentUser.username);
-
-        if (userIndex !== -1) {
-            users[userIndex] = currentUser;
-        }
-
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
     };
 
     generateBingoCard();
