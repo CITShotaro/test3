@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { username: '', bingoCount: 0 };
     let bingoCount = currentUser.bingoCount;
 
-    // 5x5のBINGOカードの状態を管理する2次元配列
-    let cardState = Array.from({ length: 5 }, () => Array(5).fill(false));
+    // BINGOカードの状態を管理する配列（localStorageから読み込む）
+    let cardState = JSON.parse(localStorage.getItem('bingoState')) || Array(25).fill(false);
 
     // BINGOカードの生成
     const generateBingoCard = () => {
@@ -16,8 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let j = 0; j < 5; j++) {
                 const cell = document.createElement('div');
                 cell.classList.add('bingo-cell');
-                cell.textContent = `${i * 5 + j + 1}`; // 仮のテキスト
-                cell.addEventListener('click', () => handleCellClick(i, j, cell));
+                const cellIndex = i * 5 + j;
+                cell.textContent = `${cellIndex + 1}`; // マスの番号
+
+                // カード状態に基づき、正解済みのマスの色を変える
+                if (cardState[cellIndex]) {
+                    cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
+                } else {
+                    cell.addEventListener('click', () => handleCellClick(cellIndex, cell)); // 未正解マスのみクリック可能
+                }
+
                 row.appendChild(cell);
             }
             bingoCard.appendChild(row);
@@ -25,39 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // マスクリック時の処理
-    const handleCellClick = (i, j, cell) => {
-        if (!cardState[i][j]) {
-            const cellIndex = i * 5 + j; // マス番号を計算
-            localStorage.setItem('currentCellIndex', cellIndex); // 選択したマスの番号を保存
-            window.location.href = 'question.html'; // 問題画面に遷移
-        }
-    };
-
-    // BINGOの判定
-    const checkBingo = () => {
-        let newBingoCount = 0;
-
-        const checkLine = (line) => line.every(cell => cell);
-
-        // 縦のチェック
-        for (let i = 0; i < 5; i++) {
-            if (checkLine(cardState.map(row => row[i]))) newBingoCount++;
-        }
-
-        // 横のチェック
-        for (let row of cardState) {
-            if (checkLine(row)) newBingoCount++;
-        }
-
-        // 斜めのチェック
-        if (checkLine(cardState.map((row, idx) => row[idx]))) newBingoCount++;
-        if (checkLine(cardState.map((row, idx) => row[4 - idx]))) newBingoCount++;
-
-        if (newBingoCount > bingoCount) {
-            bingoCount = newBingoCount;
-            updateBingoCount();
-            saveUserData(); // ユーザーデータの更新
-        }
+    const handleCellClick = (index, cell) => {
+        localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
+        window.location.href = 'question.html'; // 問題画面に遷移
     };
 
     // BINGOカウントの更新
