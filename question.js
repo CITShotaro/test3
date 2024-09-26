@@ -51,21 +51,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // デバッグ用のログ
-    console.log('currentCellIndex:', cellIndex);
-    console.log('currentUser:', currentUser);
-
     // CSVから問題を読み込む
     const allQuestions = await loadQuestionsFromCSV();
     
-    // 読み込んだ問題のログを表示
-    console.log('allQuestions:', allQuestions);
-
     // 現在のマスに対応する問題を抽出
     const questions = allQuestions.slice(cellIndex * totalQuestions, (cellIndex + 1) * totalQuestions);
-
-    // 抽出した問題のログを表示
-    console.log('Selected questions:', questions);
 
     // 問題が存在しない場合、アラートを表示して戻る
     if (questions.length === 0) {
@@ -115,9 +105,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // BINGOカードの状態を更新する関数
     const updateBingoCellState = (index) => {
-        const bingoState = JSON.parse(localStorage.getItem('bingoState')) || Array(25).fill(false);
-        bingoState[index] = true; // 現在のマスを正解済みとする
-        localStorage.setItem('bingoState', JSON.stringify(bingoState)); // 保存
+        // 現在のユーザーのBINGO状態を更新
+        currentUser.bingoState[index] = true;
+
+        // ユーザーリストを更新
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(user => user.username === currentUser.username);
+
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+        }
+
+        // 更新された情報を保存
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
     };
 
     nextQuestionButton.addEventListener('click', () => {
