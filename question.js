@@ -134,8 +134,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadQuestion(currentQuestionIndex);
     nextQuestionButton.disabled = true;
 });
-
-
-    loadQuestion(currentQuestionIndex);
-    nextQuestionButton.disabled = true;
-});
