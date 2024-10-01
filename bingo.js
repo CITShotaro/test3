@@ -57,20 +57,27 @@ document.addEventListener('DOMContentLoaded', () => {
             [4, 8, 12, 16, 20]
         ];
 
+        let newBingoCount = 0; // 新しいBINGO数をカウントする
+
         // 各ラインをチェックして、BINGOが成立したらカウント
         lines.forEach((line, lineIndex) => {
-            const isBingo = line.every(index => bingoState[index]); // ラインが全てtrueか確認
-            if (isBingo && !checkedLines[lineIndex]) { // まだカウントされていないラインならカウント
+            const isBingo = line.every(index => bingoState[index]); // 各ラインが全てtrueか確認
+            if (isBingo && !checkedLines[lineIndex]) { // BINGOが成立し、まだカウントされていない場合
                 console.log(`ライン${lineIndex + 1}でBINGO成立`);
-                bingoCount++;
-                checkedLines[lineIndex] = true; // このラインはすでにチェック済み
+                newBingoCount++; // 新しいBINGOをカウント
+                checkedLines[lineIndex] = true; // このラインをチェック済みとする
             }
         });
 
-        currentUser.bingoCount = bingoCount;
-        currentUser.checkedLines = checkedLines; // チェック済みラインを保存
-        updateBingoCount(); // UIのカウントを更新
-        saveCurrentUser(); // ユーザー情報を保存
+        if (newBingoCount > 0) {
+            bingoCount += newBingoCount; // BINGOカウントを更新
+            currentUser.bingoCount = bingoCount;
+            currentUser.checkedLines = checkedLines; // チェック済みラインを保存
+            updateBingoCount(); // UIのカウントを更新
+            saveCurrentUser(); // ユーザー情報を保存
+        } else {
+            console.log('BINGOカウントの更新はありません');
+        }
     };
 
     // ユーザーにシャッフル済みの番号が保存されているか確認
@@ -109,8 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bingoCard.appendChild(row);
         }
 
-        console.log('BINGOカードを生成し、BINGO成立の確認を行います'); // デバッグ情報
-        checkBingo(); // BINGO成立の確認を追加
+        checkBingo(); // BINGO成立の確認を毎回行う
     };
 
     // マスクリック時の処理
@@ -121,8 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // BINGOカウントの表示を更新
     const updateBingoCount = () => {
-        console.log('現在のBINGOカウント:', bingoCount); // デバッグ情報
         bingoCountElement.textContent = bingoCount; // BINGOカウントを画面に反映
+        console.log('現在のBINGOカウント:', bingoCount); // デバッグ情報
     };
 
     generateBingoCard(); // BINGOカードを生成
