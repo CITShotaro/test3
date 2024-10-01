@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let bingoCount = currentUser.bingoCount || 0;
     let shuffledNumbers;
 
-    // 現在のユーザー情報を更新する関数を定義
+    // 現在のユーザー情報を更新する関数
     const saveCurrentUser = () => {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(user => user.username === currentUser.username);
@@ -34,6 +34,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    };
+
+    // BINGOカウントを増やす関数
+    const checkBingo = () => {
+        const lines = [
+            // 横のライン
+            [0, 1, 2, 3, 4],
+            [5, 6, 7, 8, 9],
+            [10, 11, 12, 13, 14],
+            [15, 16, 17, 18, 19],
+            [20, 21, 22, 23, 24],
+            // 縦のライン
+            [0, 5, 10, 15, 20],
+            [1, 6, 11, 16, 21],
+            [2, 7, 12, 17, 22],
+            [3, 8, 13, 18, 23],
+            [4, 9, 14, 19, 24],
+            // 斜めのライン
+            [0, 6, 12, 18, 24],
+            [4, 8, 12, 16, 20]
+        ];
+
+        let newBingoCount = 0;
+
+        // 各ラインをチェック
+        lines.forEach(line => {
+            const isBingo = line.every(index => bingoState[index]);
+            if (isBingo) {
+                newBingoCount++;
+            }
+        });
+
+        // 新しいBINGOカウントがこれまでのカウントを超えた場合のみ更新
+        if (newBingoCount > bingoCount) {
+            bingoCount = newBingoCount;
+            currentUser.bingoCount = bingoCount;
+            saveCurrentUser();
+        }
     };
 
     // ユーザーにシャッフル済みの番号が保存されているか確認
@@ -71,39 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             bingoCard.appendChild(row);
         }
+        // BINGOカウントのチェックを行う
+        checkBingo();
     };
 
     // マスクリック時の処理
     const handleCellClick = (index) => {
         localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
         window.location.href = 'question.html'; // 問題画面に遷移
-    };
-
-    // BINGOの判定
-    const checkBingo = () => {
-        let newBingoCount = 0;
-
-        const checkLine = (line) => line.every(cell => cell);
-
-        // 縦のチェック
-        for (let i = 0; i < 5; i++) {
-            if (checkLine(cardState.slice(i * 5, i * 5 + 5))) newBingoCount++;
-        }
-
-        // 横のチェック
-        for (let i = 0; i < 5; i++) {
-            if (checkLine(cardState.filter((_, index) => index % 5 === i))) newBingoCount++;
-        }
-
-        // 斜めのチェック
-        if (checkLine(cardState.filter((_, index) => index % 6 === 0))) newBingoCount++;
-        if (checkLine(cardState.filter((_, index) => index % 4 === 0 && index > 0 && index < 24))) newBingoCount++;
-
-        if (newBingoCount > bingoCount) {
-            bingoCount = newBingoCount;
-            updateBingoCount();
-            saveUserData(); // ユーザーデータの更新
-        }
     };
 
     // BINGOカウントの更新
@@ -113,7 +126,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     generateBingoCard();
     updateBingoCount();
-
-    //ランキングボタン遷移
-    
 });
