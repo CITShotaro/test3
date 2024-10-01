@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // BINGOカードの状態を管理する配列（現在のユーザーの状態を取得）
-    let bingoState = currentUser.bingoState || Array(25).fill(false);
-    let bingoCount = currentUser.bingoCount || 0;
-    let checkedLines = currentUser.checkedLines || Array(12).fill(false); // 判定済みのラインを保持
+    let bingoState = currentUser.bingoState || Array(25).fill(false); // 各マスの状態（true: 正解済み）
+    let bingoCount = currentUser.bingoCount || 0; // BINGOのカウント
+    let checkedLines = currentUser.checkedLines || Array(12).fill(false); // BINGOが成立したラインの状態
     let shuffledNumbers;
 
     // 現在のユーザー情報を保存する関数
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
     };
 
-    // BINGOカウントを増やす関数
+    // BINGO判定を行い、カウントを増やす関数
     const checkBingo = () => {
         const lines = [
             // 横のライン
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 各ラインをチェックして、BINGOが成立したらカウント
         lines.forEach((line, lineIndex) => {
             const isBingo = line.every(index => bingoState[index]); // ラインが全てtrueか確認
-            if (isBingo && !checkedLines[lineIndex]) { // まだチェックされていないラインならカウント
+            if (isBingo && !checkedLines[lineIndex]) { // まだカウントされていないラインならカウント
                 console.log(`ライン${lineIndex + 1}でBINGO成立`);
                 bingoCount++;
                 checkedLines[lineIndex] = true; // このラインはすでにチェック済み
