@@ -79,6 +79,33 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'question.html'; // 問題画面に遷移
     };
 
+    // BINGOの判定
+    const checkBingo = () => {
+        let newBingoCount = 0;
+
+        const checkLine = (line) => line.every(cell => cell);
+
+        // 縦のチェック
+        for (let i = 0; i < 5; i++) {
+            if (checkLine(cardState.slice(i * 5, i * 5 + 5))) newBingoCount++;
+        }
+
+        // 横のチェック
+        for (let i = 0; i < 5; i++) {
+            if (checkLine(cardState.filter((_, index) => index % 5 === i))) newBingoCount++;
+        }
+
+        // 斜めのチェック
+        if (checkLine(cardState.filter((_, index) => index % 6 === 0))) newBingoCount++;
+        if (checkLine(cardState.filter((_, index) => index % 4 === 0 && index > 0 && index < 24))) newBingoCount++;
+
+        if (newBingoCount > bingoCount) {
+            bingoCount = newBingoCount;
+            updateBingoCount();
+            saveUserData(); // ユーザーデータの更新
+        }
+    };
+
     // BINGOカウントの更新
     const updateBingoCount = () => {
         bingoCountElement.textContent = bingoCount;
@@ -86,4 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     generateBingoCard();
     updateBingoCount();
+
+    //ランキングボタン遷移
+    
 });
