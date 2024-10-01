@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // shuffleArray関数の定義
+    // 配列をランダムにシャッフルする関数
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let bingoCount = currentUser.bingoCount || 0;
     let shuffledNumbers;
 
-    // 現在のユーザー情報を更新する関数
+    // 現在のユーザー情報を保存する関数
     const saveCurrentUser = () => {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(user => user.username === currentUser.username);
@@ -58,19 +58,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let newBingoCount = 0;
 
-        // 各ラインをチェック
+        // 各ラインをチェックして、成立しているラインをカウント
         lines.forEach(line => {
-            const isBingo = line.every(index => bingoState[index]);
+            const isBingo = line.every(index => bingoState[index]); // 各ラインのマスが全てtrueか確認
             if (isBingo) {
                 newBingoCount++;
             }
         });
 
-        // 新しいBINGOカウントがこれまでのカウントを超えた場合のみ更新
+        // BINGOカウントの更新
         if (newBingoCount > bingoCount) {
             bingoCount = newBingoCount;
             currentUser.bingoCount = bingoCount;
-            saveCurrentUser();
+            updateBingoCount(); // UIのカウントを更新
+            saveCurrentUser(); // ユーザー情報を保存
         }
     };
 
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
-                if (bingoState[number - 1]) { // bingoStateのインデックスとシャッフルされた番号の対応を確認
+                if (bingoState[number - 1]) {
                     cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
                 } else {
                     cell.addEventListener('click', () => handleCellClick(number - 1)); // 未正解マスのみクリック可能
@@ -109,8 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             bingoCard.appendChild(row);
         }
-        // BINGOカウントのチェックを行う
-        checkBingo();
+        checkBingo(); // BINGO成立の確認を追加
     };
 
     // マスクリック時の処理
@@ -119,11 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'question.html'; // 問題画面に遷移
     };
 
-    // BINGOカウントの更新
+    // BINGOカウントの表示を更新
     const updateBingoCount = () => {
-        bingoCountElement.textContent = bingoCount;
+        bingoCountElement.textContent = bingoCount; // BINGOカウントを画面に反映
     };
 
-    generateBingoCard();
-    updateBingoCount();
+    generateBingoCard(); // BINGOカードを生成
+    updateBingoCount();  // 初期BINGOカウントを画面に反映
 });
