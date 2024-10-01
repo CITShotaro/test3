@@ -59,19 +59,25 @@ document.addEventListener('DOMContentLoaded', () => {
         let newBingoCount = 0;
 
         // 各ラインをチェックして、成立しているラインをカウント
-        lines.forEach(line => {
+        lines.forEach((line, lineIndex) => {
             const isBingo = line.every(index => bingoState[index]); // 各ラインのマスが全てtrueか確認
+            console.log(`ライン${lineIndex + 1}:`, isBingo ? 'BINGO成立' : 'BINGO未成立'); // デバッグ情報
             if (isBingo) {
                 newBingoCount++;
             }
         });
 
+        console.log('新しいBINGOカウント:', newBingoCount); // 新しいBINGOカウントの確認
+
         // BINGOカウントの更新
         if (newBingoCount > bingoCount) {
+            console.log('BINGOカウントを更新します');
             bingoCount = newBingoCount;
             currentUser.bingoCount = bingoCount;
             updateBingoCount(); // UIのカウントを更新
             saveCurrentUser(); // ユーザー情報を保存
+        } else {
+            console.log('BINGOカウントの更新は不要です');
         }
     };
 
@@ -110,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             bingoCard.appendChild(row);
         }
+
+        console.log('BINGOカードを生成し、BINGO成立の確認を行います'); // デバッグ情報
         checkBingo(); // BINGO成立の確認を追加
     };
 
@@ -121,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // BINGOカウントの表示を更新
     const updateBingoCount = () => {
+        console.log('現在のBINGOカウント:', bingoCount); // デバッグ情報
         bingoCountElement.textContent = bingoCount; // BINGOカウントを画面に反映
     };
 
