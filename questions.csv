@@ -38,7 +38,7 @@ question,correct,option1,option2,option3,option4
 #マス10の問題
 「言及する」の意味を持つ英単語は？,refer,reference,referent,refer,referral
 「歓迎会」の意味を持つ英単語は？,reception,receivable,receipt,reception,receive
-「損失」の意味を持つ英単語は？,loss,imlost,loss,lose,loss
+「損失」の意味を持つ英単語は？,loss,imlost,loss,lose,lost
 #マス11の問題
 「回避」の意味を持つ英単語は？,avoidance,avoid,avoidance,acoidable,avoidant
 「予防できる」の意味を持つ英単語は？,preventable,preventive,prevent,prevention,preventable
@@ -74,7 +74,7 @@ question,correct,option1,option2,option3,option4
 #マス19の問題
 「入口」の意味を持つ英単語は？,entrance,entry,entrance,enter,entrant
 「拡散する」の意味を持つ英単語は？,disspread,spereadable,disspread,wildspread,spread
-「傾向」の意味を持つ英単語は？,tendency,tend,tender,tenency,distend
+「傾向」の意味を持つ英単語は？,tendency,tend,tender,tendency,distend
 #マス20の問題
 「依存する」の意味を持つ英単語は？,depend,dependent,depend,dependable,dependence
 「存在している」の意味を持つ英単語は？,existent,existent,preexist,exist,existence
