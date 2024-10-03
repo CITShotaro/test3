@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // BINGOカードの状態を管理する配列（現在のユーザーの状態を取得）
-    let bingoState = currentUser.bingoState || Array(25).fill(false); // 各マスの状態（true: 正解済み）
+    let bingoState = currentUser.bingoState || {}; // 各マスの状態を番号（キー）と正解済み（true）で管理する
     let bingoCount = currentUser.bingoCount || 0; // BINGOのカウント
     let checkedLines = currentUser.checkedLines || Array(12).fill(false); // BINGOが成立したラインの状態
     let shuffledNumbers;
@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users[userIndex] = currentUser;
         }
 
+        currentUser.bingoState = bingoState; // bingoState を保存
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
     };
@@ -61,9 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 各ラインをチェックして、BINGOが成立したらカウント
         lines.forEach((line, lineIndex) => {
-            const isBingo = line.every(index => bingoState[index]); // 各ラインが全てtrueか確認
+            const isBingo = line.every(cellIndex => {
+                const number = shuffledNumbers[cellIndex]; // カード上のシャッフルされた数字を取得
+                return bingoState[number]; // その数字がbingoStateでtrue（正解済み）か確認
+            });
+
+            console.log(`ライン${lineIndex + 1}: ${isBingo ? 'BINGO成立' : 'BINGO未成立'}`);
             if (isBingo && !checkedLines[lineIndex]) { // BINGOが成立し、まだカウントされていない場合
-                console.log(`ライン${lineIndex + 1}でBINGO成立`);
+                console.log(`ライン${lineIndex + 1}が成立して、BINGOカウントを増やします`);
                 bingoCount++; // その都度BINGOカウントを1増やす
                 checkedLines[lineIndex] = true; // このラインをチェック済みとする
                 bingoUpdated = true;
@@ -77,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCurrentUser(); // ユーザー情報を保存
             console.log(`BINGOカウント更新: ${bingoCount}`);
         } else {
-            console.log('BINGO成立なし');
+            console.log('新しいBINGOは成立していません');
         }
     };
 
@@ -106,10 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
-                if (bingoState[number - 1]) {
+                if (bingoState[number]) {
                     cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
                 } else {
-                    cell.addEventListener('click', () => handleCellClick(number - 1)); // 未正解マスのみクリック可能
+                    cell.addEventListener('click', () => handleCellClick(number)); // 未正解マスのみクリック可能
                 }
 
                 row.appendChild(cell);
@@ -121,17 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // マスクリック時の処理
-    const handleCellClick = (index) => {
-        // マスがクリックされた際に、そのマスを true にする
-        bingoState[index] = true;
-    
-        // bingoState が正しく更新されているか確認
-        console.log(`マス ${index + 1} がクリックされ、bingoState 更新:`, bingoState);
-    
-        localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
+    const handleCellClick = (number) => {
+        bingoState[number] = true; // マスをクリックしたら正解として記録
+        console.log(`マス ${number} が正解されました:`, bingoState);
+        localStorage.setItem('currentCellNumber', number); // 選択したマスの番号を保存
         window.location.href = 'question.html'; // 問題画面に遷移
     };
-
 
     // BINGOカウントの表示を更新
     const updateBingoCount = () => {
