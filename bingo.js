@@ -57,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             [4, 8, 12, 16, 20]
         ];
 
+        let bingoUpdated = false; // カウントが増えたかどうかを追跡
+
         // 各ラインをチェックして、BINGOが成立したらカウント
         lines.forEach((line, lineIndex) => {
             const isBingo = line.every(index => bingoState[index]); // 各ラインが全てtrueか確認
@@ -64,13 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`ライン${lineIndex + 1}でBINGO成立`);
                 bingoCount++; // その都度BINGOカウントを1増やす
                 checkedLines[lineIndex] = true; // このラインをチェック済みとする
-                updateBingoCount(); // UIのカウントを更新
-                currentUser.bingoCount = bingoCount; // ユーザー情報にBINGOカウントを反映
-                currentUser.checkedLines = checkedLines; // チェック済みラインを保存
-                saveCurrentUser(); // ユーザー情報を保存
-                console.log(`BINGOカウント更新: ${bingoCount}`);
+                bingoUpdated = true;
             }
         });
+
+        if (bingoUpdated) {
+            currentUser.bingoCount = bingoCount; // ユーザー情報にBINGOカウントを反映
+            currentUser.checkedLines = checkedLines; // チェック済みラインを保存
+            updateBingoCount(); // UIのカウントを更新
+            saveCurrentUser(); // ユーザー情報を保存
+            console.log(`BINGOカウント更新: ${bingoCount}`);
+        } else {
+            console.log('BINGO成立なし');
+        }
     };
 
     // ユーザーにシャッフル済みの番号が保存されているか確認
@@ -114,9 +122,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // マスクリック時の処理
     const handleCellClick = (index) => {
+        // マスがクリックされた際に、そのマスを true にする
+        bingoState[index] = true;
+    
+        // bingoState が正しく更新されているか確認
+        console.log(`マス ${index + 1} がクリックされ、bingoState 更新:`, bingoState);
+    
         localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
         window.location.href = 'question.html'; // 問題画面に遷移
     };
+
 
     // BINGOカウントの表示を更新
     const updateBingoCount = () => {
