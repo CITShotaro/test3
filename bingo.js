@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentUser.bingoCount = bingoCount; // ユーザー情報にBINGOカウントを反映
                 currentUser.checkedLines = checkedLines; // チェック済みラインを保存
                 saveCurrentUser(); // ユーザー情報を保存
+                console.log(`BINGOカウント更新: ${bingoCount}`);
             }
         });
     };
