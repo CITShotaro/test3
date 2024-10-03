@@ -62,7 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 各ラインをチェックして、BINGOが成立したらカウント
         lines.forEach((line, lineIndex) => {
-            const isBingo = line.every(index => bingoState[index]); // 各ラインが全てtrueか確認
+            const isBingo = line.every(cellIndex => {
+                const number = shuffledNumbers[cellIndex]; // ライン内のセルに対応するシャッフルされた番号を取得
+                return bingoState[number - 1]; // bingoStateの正解状態を確認（シャッフルされた番号に基づく）
+            });
+
             console.log(`ライン${lineIndex + 1}: ${isBingo ? 'BINGO成立' : 'BINGO未成立'}`);
             if (isBingo && !checkedLines[lineIndex]) { // BINGOが成立し、まだカウントされていない場合
                 console.log(`ライン${lineIndex + 1}が成立して、BINGOカウントを増やします`);
