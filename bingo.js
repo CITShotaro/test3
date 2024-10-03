@@ -75,12 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // マスクリック時の処理
     const handleCellClick = (index) => {
-        bingoState[index] = true; // マスをクリックしたらそのマスを正解とする
-        currentUser.bingoState = bingoState; // 状態を更新
-        saveCurrentUser(); // ユーザー情報を保存
-        generateBingoCard(); // カードを再生成して色を更新
-         window.location.href = 'question.html'; // 問題画面に遷移
-        checkBingo(); // BINGO判定を実行
+        localStorage.setItem('currentCellIndex', index); // 選択したマスのインデックスを保存
+        window.location.href = 'question.html'; // 問題画面に遷移
     };
 
     // BINGOの判定
