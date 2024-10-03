@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // shuffleArray関数の定義
+    // 配列をランダムにシャッフルする関数
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -19,11 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // BINGOカードの状態を管理する配列（現在のユーザーの状態を取得）
-    let bingoState = currentUser.bingoState || Array(25).fill(false); // 各マスの状態を保存（初期状態はすべてfalse）
+    let bingoState = currentUser.bingoState || Array(25).fill(false); // 各マスの状態（true: 正解済み）
     let bingoCount = currentUser.bingoCount || 0; // BINGOのカウント
+    let checkedLines = currentUser.checkedLines || Array(12).fill(false); // BINGOが成立したラインの状態
     let shuffledNumbers;
 
-    // 現在のユーザー情報を更新する関数を定義
+    // 現在のユーザー情報を保存する関数
     const saveCurrentUser = () => {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const userIndex = users.findIndex(user => user.username === currentUser.username);
@@ -32,8 +33,54 @@ document.addEventListener('DOMContentLoaded', () => {
             users[userIndex] = currentUser;
         }
 
+        currentUser.bingoState = bingoState; // bingoState を保存
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    };
+
+    // BINGO判定を行い、カウントを増やす関数
+    const checkBingo = () => {
+        const lines = [
+            // 横のライン
+            [0, 1, 2, 3, 4],
+            [5, 6, 7, 8, 9],
+            [10, 11, 12, 13, 14],
+            [15, 16, 17, 18, 19],
+            [20, 21, 22, 23, 24],
+            // 縦のライン
+            [0, 5, 10, 15, 20],
+            [1, 6, 11, 16, 21],
+            [2, 7, 12, 17, 22],
+            [3, 8, 13, 18, 23],
+            [4, 9, 14, 19, 24],
+            // 斜めのライン
+            [0, 6, 12, 18, 24],
+            [4, 8, 12, 16, 20]
+        ];
+
+        let bingoUpdated = false; // カウントが増えたかどうかを追跡
+
+        // 各ラインをチェックして、BINGOが成立したらカウント
+        lines.forEach((line, lineIndex) => {
+            const isBingo = line.every(index => bingoState[index]); // 各ラインが全てtrueか確認
+            console.log(`ライン${lineIndex + 1}: ${isBingo ? 'BINGO成立' : 'BINGO未成立'}`);
+            if (isBingo && !checkedLines[lineIndex]) { // BINGOが成立し、まだカウントされていない場合
+                console.log(`ライン${lineIndex + 1}が成立して、BINGOカウントを増やします`);
+                bingoCount++; // その都度BINGOカウントを1増やす
+                checkedLines[lineIndex] = true; // このラインをチェック済みとする
+                bingoUpdated = true;
+            }
+        });
+
+        if (bingoUpdated) {
+            currentUser.bingoCount = bingoCount; // ユーザー情報にBINGOカウントを反映
+            currentUser.checkedLines = checkedLines; // チェック済みラインを保存
+            updateBingoCount(); // UIのカウントを更新
+            saveCurrentUser(); // ユーザー情報を保存
+            console.log(`BINGOカウント更新: ${bingoCount}`);
+        } else {
+            console.log('新しいBINGOは成立していません');
+        }
     };
 
     // ユーザーにシャッフル済みの番号が保存されているか確認
@@ -61,60 +108,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
-                if (bingoState[cellIndex]) { // `bingoState` はシャッフル後のインデックスで管理する
+                if (bingoState[number - 1]) {
                     cell.classList.add('correct-cell'); // 正解済みのマスに適用するCSSクラス
                 } else {
-                    cell.addEventListener('click', () => handleCellClick(cellIndex)); // 未正解マスのみクリック可能
+                    cell.addEventListener('click', () => handleCellClick(number - 1)); // 未正解マスのみクリック可能
                 }
 
                 row.appendChild(cell);
             }
             bingoCard.appendChild(row);
         }
+
+        checkBingo(); // BINGO成立の確認を毎回行う
     };
 
     // マスクリック時の処理
     const handleCellClick = (index) => {
-        localStorage.setItem('currentCellIndex', index); // 選択したマスのインデックスを保存
+        bingoState[index] = true; // マスをクリックしたら正解として記録
+        console.log(`マス ${index + 1} が正解されました:`, bingoState);
+        localStorage.setItem('currentCellIndex', index); // 選択したマスの番号を保存
         window.location.href = 'question.html'; // 問題画面に遷移
     };
 
-    // BINGOの判定
-    const checkBingo = () => {
-        let newBingoCount = 0;
-
-        const checkLine = (line) => line.every(index => bingoState[index]); // すべてのマスが正解しているかを確認
-
-        // 横のチェック
-        for (let i = 0; i < 5; i++) {
-            const row = [i * 5, i * 5 + 1, i * 5 + 2, i * 5 + 3, i * 5 + 4];
-            if (checkLine(row)) newBingoCount++;
-        }
-
-        // 縦のチェック
-        for (let i = 0; i < 5; i++) {
-            const column = [i, i + 5, i + 10, i + 15, i + 20];
-            if (checkLine(column)) newBingoCount++;
-        }
-
-        // 斜めのチェック
-        const diagonal1 = [0, 6, 12, 18, 24]; // 左上から右下
-        const diagonal2 = [4, 8, 12, 16, 20]; // 右上から左下
-        if (checkLine(diagonal1)) newBingoCount++;
-        if (checkLine(diagonal2)) newBingoCount++;
-
-        if (newBingoCount > bingoCount) {
-            bingoCount = newBingoCount;
-            updateBingoCount();
-            saveCurrentUser(); // ユーザーデータの更新
-        }
-    };
-
-    // BINGOカウントの更新
+    // BINGOカウントの表示を更新
     const updateBingoCount = () => {
-        bingoCountElement.textContent = bingoCount;
+        bingoCountElement.textContent = bingoCount; // BINGOカウントを画面に反映
+        console.log('現在のBINGOカウント:', bingoCount); // デバッグ情報
     };
 
-    generateBingoCard(); // 初回のBINGOカード生成
-    updateBingoCount(); // 初期状態のBINGOカウントを表示
+    generateBingoCard(); // BINGOカードを生成
+    updateBingoCount();  // 初期BINGOカウントを画面に反映
 });
