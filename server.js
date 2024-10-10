@@ -23,30 +23,49 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// ユーザーログイン処理
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    User.findOne({ username, password }, (err, user) => {
-        if (err) return res.status(500).send(err);
-        if (!user) return res.status(404).send('ユーザーが見つかりません');
-        res.send(user); // ログイン成功時にユーザーデータを返す
+// ログイン処理
+function login(username, password) {
+    fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data) {
+            // セッションにユーザー情報を保存
+            sessionStorage.setItem('currentUser', JSON.stringify(data));
+            console.log('ログイン成功:', data);
+        } else {
+            console.log('ユーザーが見つかりません');
+        }
+    })
+    .catch((error) => {
+        console.error('エラー:', error);
     });
-});
+}
+
 
 // ユーザーデータの保存処理
-app.post('/save', (req, res) => {
-    const { username, bingoState, bingoCount, bingoNumbers } = req.body;
+function saveUserData(username, bingoState, bingoCount, bingoNumbers) {
+    fetch('http://localhost:3000/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, bingoState, bingoCount, bingoNumbers }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('ユーザーデータの保存成功:', data);
+    })
+    .catch((error) => {
+        console.error('エラー:', error);
+    });
+}
 
-    User.findOneAndUpdate(
-        { username },
-        { bingoState, bingoCount, bingoNumbers },
-        { new: true, upsert: true },
-        (err, user) => {
-            if (err) return res.status(500).send(err);
-            res.send(user); // 保存・更新後のユーザーデータを返す
-        }
-    );
-});
 
 // サーバーの起動
 app.listen(3000, () => {
