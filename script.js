@@ -1,73 +1,53 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
 
-// Expressのセットアップ
-const app = express();
-app.use(bodyParser.json()); // JSONリクエストのパース
+    // ログイン処理
+    if (loginForm) {
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
 
-// MongoDBに接続
-mongoose.connect('mongodb://localhost:27017/english-bingo', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+            // ユーザー情報を検索
+            const user = users.find(user => user.username === username && user.password === password);
 
-// ユーザースキーマの定義
-const userSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    bingoState: Array,
-    bingoCount: Number,
-    bingoNumbers: Array
-});
+            if (user) {
+                // ログイン成功
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = 'bingo.html'; // ログイン成功後にBINGO画面へ
+            } else {
+                // ログイン失敗時のエラーメッセージ表示
+                document.getElementById('login-error').innerText = 'ユーザーIDまたはパスワードが間違っています。';
+            }
+        });
+    }
 
-const User = mongoose.model('User', userSchema);
+    // 新規登録処理
+    if (registerForm) {
+        registerForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
 
-// ログイン処理
-function login(username, password) {
-    fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data) {
-            // セッションにユーザー情報を保存
-            sessionStorage.setItem('currentUser', JSON.stringify(data));
-            console.log('ログイン成功:', data);
-        } else {
-            console.log('ユーザーが見つかりません');
-        }
-    })
-    .catch((error) => {
-        console.error('エラー:', error);
-    });
-}
-
-
-// ユーザーデータの保存処理
-function saveUserData(username, bingoState, bingoCount, bingoNumbers) {
-    fetch('http://localhost:3000/save', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, bingoState, bingoCount, bingoNumbers }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('ユーザーデータの保存成功:', data);
-    })
-    .catch((error) => {
-        console.error('エラー:', error);
-    });
-}
-
-
-// サーバーの起動
-app.listen(3000, () => {
-    console.log('サーバーがポート3000で稼働中');
+            // 既に同じユーザー名が登録されているか確認
+            if (users.some(user => user.username === username)) {
+                document.getElementById('register-error').innerText = 'このユーザーIDは既に使用されています。';
+            } else {
+                // 新しいユーザーを登録（BINGOカードの初期状態を設定）
+                const newUser = { 
+                    username, 
+                    password, 
+                    bingoState: Array(25).fill(false), // 25マスの初期状態
+                    bingoCount: 0 
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users)); // 全ユーザー情報を保存
+                alert('登録が完了しました。ログインしてください。');
+                window.location.href = 'index.html'; // ログイン画面にリダイレクト
+            }
+        });
+    }
 });
