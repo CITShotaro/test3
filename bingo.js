@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.classList.add('bingo-cell');
                 const cellIndex = i * 5 + j;
                 const number = shuffledNumbers[cellIndex]; // シャッフルされた数字を取得
+                console.log(number);
                 cell.textContent = `${number}`; // ランダムな番号を表示
 
                 // カード状態に基づき、正解済みのマスの色を変える
