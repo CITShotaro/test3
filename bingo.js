@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser.bingoNumbers = shuffledNumbers; // シャッフルされた番号をユーザーに保存
         saveCurrentUser(); // ユーザー情報を更新
     }
+    console.log("Shuffled Numbers:", shuffledNumbers); // シャッフル結果の確認
 
     // BINGOカードの生成
     const generateBingoCard = () => {
